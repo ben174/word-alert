@@ -1,0 +1,95 @@
+<html>
+<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script language="javascript">
+
+var words = []
+var countdownCounter = 10;
+var counter = 0;
+
+function loadWords() {
+  console.log('loading Words');
+  $.get("words.txt", function(data) {
+    console.log('words are loaded!');
+    words = data.split('\n');
+    words = shuffle(words);
+    console.log("Showing first word.");
+    showThenWait();
+  });
+}
+
+function showThenWait() {
+  counter++;
+  if(counter % 4 == 0) {
+    console.log("showing countdown");
+    showCountdown();
+    return;
+  }
+  console.log("Showing word");
+  $("#word").show();
+  $("#word").html(words.pop());
+  console.log("Waiting 6 seconds...");
+  setTimeout(showThenWait, 6000);
+}
+
+
+function countdownTick() {
+  console.log("countdown tick!");
+  $("#countdown").show();
+  $("#countdown").html(countdownCounter + " seconds left");
+  countdownCounter--;
+  if(countdownCounter >= 0) {
+    setTimeout(countdownTick, 1000);
+  } else {
+    console.log("countdown ended. resuming showing words");
+    $("#countdown").hide();
+    showThenWait();
+  }
+}
+
+function showCountdown() {
+  $("#word").hide(500);
+  countdownCounter = 10;
+  countdownTick();
+}
+
+function shuffle(o){
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
+
+jQuery(function() {
+  loadWords();
+});
+
+</script>
+<style>
+
+#countdown {
+  font-size: 100px;
+  margin-top: 400px;
+  color: #A66;
+}
+#word {
+  font-size: 200px;
+  margin-top: 400px;
+}
+
+.bigword {
+  text-align: center;
+  font-weight: bold;
+  font-family: sans-serif;
+  text-transform: capitalize;
+}
+body {
+  background: url('http://cdn.twitrcovers.com/wp-content/uploads/2014/02/Simple-l.jpg');
+  background-size: 120% auto;
+}
+</style>
+<body>
+  <center>
+    <div id="word" class="bigword"></div>
+    <div id="countdown" class="bigword"></div>
+  </center>
+</body>
+</html>
